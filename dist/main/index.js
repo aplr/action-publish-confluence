@@ -39389,7 +39389,6 @@ const configSchema = zod_1.default.object({
 function getConfig() {
     return __awaiter(this, void 0, void 0, function* () {
         const inputs = getActionInputs();
-        core.info(JSON.stringify(inputs));
         const config = Object.fromEntries(Object.entries(inputs).filter(([_, v]) => v !== undefined));
         return yield configSchema.parseAsync(config);
     });
@@ -39526,7 +39525,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const path_1 = __importDefault(__nccwpck_require__(1017));
 const promises_1 = __nccwpck_require__(3292);
 const core = __importStar(__nccwpck_require__(2186));
 const utils = __importStar(__nccwpck_require__(308));
@@ -39541,23 +39544,23 @@ function syncAttachments(pageId, attachments) {
             core.info("No attachments to publish");
             return;
         }
-        for (const [_, path] of Object.entries(attachments)) {
+        for (const [_, filename] of Object.entries(attachments)) {
             // check if files exist
-            yield (0, promises_1.stat)(path);
+            yield (0, promises_1.stat)(path_1.default.resolve(__dirname, filename));
         }
         const remoteAttachments = yield confluence.getAttachments(pageId);
         const remoteAttachmentsMap = Object.fromEntries(remoteAttachments.results.map(attachment => [attachment.title, attachment]));
-        for (const [filename, path] of Object.entries(attachments)) {
-            const data = yield (0, promises_1.readFile)(path);
+        for (const [name, filename] of Object.entries(attachments)) {
+            const data = yield (0, promises_1.readFile)(path_1.default.resolve(__dirname, filename));
             // get remote attachment if exists
-            const remoteAttachment = remoteAttachmentsMap[filename];
+            const remoteAttachment = remoteAttachmentsMap[name];
             // upload the attachment
-            yield confluence.uploadAttachment(pageId, filename, data, remoteAttachment === null || remoteAttachment === void 0 ? void 0 : remoteAttachment.id);
+            yield confluence.uploadAttachment(pageId, name, data, remoteAttachment === null || remoteAttachment === void 0 ? void 0 : remoteAttachment.id);
             if (remoteAttachment) {
-                core.info(`Updated ${filename} on page ${pageId}.`);
+                core.info(`Updated ${name} on page ${pageId}.`);
             }
             else {
-                core.info(`Added ${filename} to page ${pageId}.`);
+                core.info(`Added ${name} to page ${pageId}.`);
             }
         }
     });

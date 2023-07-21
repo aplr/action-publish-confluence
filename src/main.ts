@@ -1,3 +1,4 @@
+import path from "path"
 import { readFile, stat } from "fs/promises"
 
 import * as core from "@actions/core"
@@ -19,9 +20,9 @@ async function syncAttachments(
     return
   }
 
-  for (const [_, path] of Object.entries(attachments)) {
+  for (const [_, filename] of Object.entries(attachments)) {
     // check if files exist
-    await stat(path)
+    await stat(path.resolve(__dirname, filename))
   }
 
   const remoteAttachments = await confluence.getAttachments(pageId)
@@ -30,19 +31,19 @@ async function syncAttachments(
     remoteAttachments.results.map(attachment => [attachment.title, attachment]),
   )
 
-  for (const [filename, path] of Object.entries(attachments)) {
-    const data = await readFile(path)
+  for (const [name, filename] of Object.entries(attachments)) {
+    const data = await readFile(path.resolve(__dirname, filename))
 
     // get remote attachment if exists
-    const remoteAttachment = remoteAttachmentsMap[filename]
+    const remoteAttachment = remoteAttachmentsMap[name]
 
     // upload the attachment
-    await confluence.uploadAttachment(pageId, filename, data, remoteAttachment?.id)
+    await confluence.uploadAttachment(pageId, name, data, remoteAttachment?.id)
 
     if (remoteAttachment) {
-      core.info(`Updated ${filename} on page ${pageId}.`)
+      core.info(`Updated ${name} on page ${pageId}.`)
     } else {
-      core.info(`Added ${filename} to page ${pageId}.`)
+      core.info(`Added ${name} to page ${pageId}.`)
     }
   }
 }
