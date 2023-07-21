@@ -17,8 +17,9 @@ const parseKeyValuePairs = (value: string): Record<string, string> =>
 
 const configSchema = zod.object({
   url: zod.string().url(),
-  username: zod.string(),
-  accessToken: zod.string(),
+  username: zod.string().optional(),
+  password: zod.string().optional(),
+  accessToken: zod.string().optional(),
   pageId: zod.string(),
   attachments: zod.string().regex(keyValueRegex).transform(parseKeyValuePairs),
 })
@@ -37,8 +38,9 @@ export async function getConfig(): Promise<Config> {
 function getActionInputs(): ConfigInput {
   return {
     url: core.getInput("url", { required: true }),
-    username: core.getInput("username", { required: true }),
-    accessToken: core.getInput("access_token", { required: true }),
+    username: core.getInput("username", { required: false }),
+    password: core.getInput("password", { required: false }),
+    accessToken: core.getInput("access_token", { required: false }),
     pageId: core.getInput("page_id", { required: true }),
     attachments: core.getInput("attachments", { required: false }),
   }

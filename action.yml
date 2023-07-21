@@ -10,10 +10,13 @@ inputs:
     required: true
   username:
     description: 'Confluence username.'
-    required: true
+    required: false
+  password:
+    description: 'Confluence password.'
+    required: false
   access_token:
     description: 'Confluence access token.'
-    required: true
+    required: false
   page_id:
     description: 'Confluence page id.'
     required: true

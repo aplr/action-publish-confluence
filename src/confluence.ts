@@ -1,18 +1,17 @@
 import { File, FormData, fetch, RequestInit, Response } from "undici"
 
-export interface Config {
+export interface ConfluenceConfig {
   url: string
-  username: string
-  accessToken: string
+  username?: string
+  password?: string
+  accessToken?: string
 }
 
-let _config: Config = {
+let _config: ConfluenceConfig = {
   url: "",
-  username: "",
-  accessToken: "",
 }
 
-export const setConfig = (config: Config): void => {
+export const setConfig = (config: ConfluenceConfig): void => {
   _config = config
 }
 
@@ -54,15 +53,27 @@ export const getAttachments = async (
   return data as PaginatedResponse<Attachment>
 }
 
+const getAuthHeader = () => {
+  const { username, password, accessToken } = _config
+
+  if (accessToken) {
+    return `Bearer ${accessToken}`
+  } else if (username && password) {
+    const credentials = Buffer.from([username, password].join(":")).toString("base64")
+    return `Basic ${credentials}`
+  }
+
+  throw new Error("No credentials provided")
+}
+
 const req = async (path: string, init?: RequestInit): Promise<Response> => {
-  const { username, accessToken } = _config
-  const auth = Buffer.from([username, accessToken].join(":")).toString("base64")
+  const auth = getAuthHeader()
 
   const { headers = {}, ...options } = init || {}
 
   return await fetch(`${_config.url}/rest/api/${path}`, {
     headers: {
-      Authorization: `Basic ${auth}`,
+      Authorization: auth,
       ...headers,
     },
     ...options,
