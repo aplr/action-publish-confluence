@@ -3,7 +3,7 @@ import zod from "zod"
 import * as core from "@actions/core"
 
 // A regex that accepts a list of string=string pairs, separated by either commas or newlines.
-const keyValueRegex = /^((?:\s*[\w-]+\s*=\s*.+\s*(?:,|\n)?)+)$/
+const keyValueRegex = /^((?:\s*[\w-.+]+\s*=\s*.+\s*(?:,|\n)?)+)$/
 
 const parseKeyValuePairs = (value: string): Record<string, string> =>
   Object.fromEntries(
