@@ -1,4 +1,4 @@
-import { FormData, fetch, RequestInit, Response } from "undici"
+import { File, FormData, fetch, RequestInit, Response } from "undici"
 
 export interface ConfluenceConfig {
   url: string
@@ -19,10 +19,14 @@ export const uploadAttachment = async (
   pageId: string,
   filename: string,
   filedata: Buffer,
+  filetype?: string,
   attachmentId?: string,
 ): Promise<PaginatedResponse<Attachment>> => {
   const formData = new FormData()
-  formData.append("file", filedata, filename)
+  const file = new File([filedata], filename, {
+    type: filetype,
+  })
+  formData.append("file", file)
 
   const path = attachmentId
     ? `content/${pageId}/child/attachment/${attachmentId}/data`
@@ -37,6 +41,11 @@ export const uploadAttachment = async (
     body: formData,
   })
 
+  if (!response.ok) {
+    const data = await response.text()
+    throw new Error(`Failed to upload attachment: ${data}`)
+  }
+
   const data = await response.json()
 
   return data as PaginatedResponse<Attachment>
@@ -46,6 +55,11 @@ export const getAttachments = async (
   pageId: string,
 ): Promise<PaginatedResponse<Attachment>> => {
   const response = await req(`content/${pageId}/child/attachment`)
+
+  if (!response.ok) {
+    const data = await response.text()
+    throw new Error(`Failed to get attachments: ${data}`)
+  }
 
   const data = await response.json()
 

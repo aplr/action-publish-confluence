@@ -1,5 +1,6 @@
 import path from "path"
 import process from "process"
+import mime from "mime-types"
 import { readFile, stat } from "fs/promises"
 
 import * as core from "@actions/core"
@@ -41,11 +42,15 @@ async function syncAttachments(
     // get remote attachment if exists
     const remoteAttachment = remoteAttachmentsMap[name]
 
+    // determine mime type
+    const mimeType = mime.lookup(filename) || "application/octet-stream"
+
     // upload the attachment
     const result = await confluence.uploadAttachment(
       pageId,
       name,
       data,
+      mimeType,
       remoteAttachment?.id,
     )
 
