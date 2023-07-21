@@ -1,4 +1,5 @@
 import path from "path"
+import process from "process"
 import { readFile, stat } from "fs/promises"
 
 import * as core from "@actions/core"
@@ -22,7 +23,7 @@ async function syncAttachments(
 
   for (const [_, filename] of Object.entries(attachments)) {
     // check if files exist
-    await stat(path.resolve(__dirname, filename))
+    await stat(path.resolve(process.cwd(), filename))
   }
 
   const remoteAttachments = await confluence.getAttachments(pageId)
@@ -32,7 +33,7 @@ async function syncAttachments(
   )
 
   for (const [name, filename] of Object.entries(attachments)) {
-    const data = await readFile(path.resolve(__dirname, filename))
+    const data = await readFile(path.resolve(process.cwd(), filename))
 
     // get remote attachment if exists
     const remoteAttachment = remoteAttachmentsMap[name]
