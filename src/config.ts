@@ -30,8 +30,6 @@ export type Config = zod.infer<typeof configSchema>
 export async function getConfig(): Promise<Config> {
   const inputs = getActionInputs()
 
-  core.info(JSON.stringify(inputs))
-
   const config = Object.fromEntries(
     Object.entries(inputs).filter(([_, v]) => v !== undefined),
   )
