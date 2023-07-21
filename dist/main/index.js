@@ -39558,7 +39558,8 @@ function syncAttachments(pageId, attachments) {
             // get remote attachment if exists
             const remoteAttachment = remoteAttachmentsMap[name];
             // upload the attachment
-            yield confluence.uploadAttachment(pageId, name, data, remoteAttachment === null || remoteAttachment === void 0 ? void 0 : remoteAttachment.id);
+            const result = yield confluence.uploadAttachment(pageId, name, data, remoteAttachment === null || remoteAttachment === void 0 ? void 0 : remoteAttachment.id);
+            core.info(JSON.stringify(result));
             if (remoteAttachment) {
                 core.info(`Updated ${name} on page ${pageId}.`);
             }
