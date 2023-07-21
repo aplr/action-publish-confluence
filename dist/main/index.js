@@ -39445,8 +39445,7 @@ const setConfig = (config) => {
 exports.setConfig = setConfig;
 const uploadAttachment = (pageId, filename, filedata, attachmentId) => __awaiter(void 0, void 0, void 0, function* () {
     const formData = new undici_1.FormData();
-    const file = new undici_1.File([filedata], filename);
-    formData.set("file", file, filename);
+    formData.append("file", filedata, filename);
     const path = attachmentId
         ? `content/${pageId}/child/attachment/${attachmentId}/data`
         : `content/${pageId}/child/attachment`;

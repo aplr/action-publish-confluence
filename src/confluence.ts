@@ -1,4 +1,4 @@
-import { File, FormData, fetch, RequestInit, Response } from "undici"
+import { FormData, fetch, RequestInit, Response } from "undici"
 
 export interface ConfluenceConfig {
   url: string
@@ -22,8 +22,7 @@ export const uploadAttachment = async (
   attachmentId?: string,
 ): Promise<PaginatedResponse<Attachment>> => {
   const formData = new FormData()
-  const file = new File([filedata], filename)
-  formData.set("file", file, filename)
+  formData.append("file", filedata, filename)
 
   const path = attachmentId
     ? `content/${pageId}/child/attachment/${attachmentId}/data`
