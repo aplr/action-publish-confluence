@@ -1,0 +1,33 @@
+name: Publish to Confluence
+description: Publishes content and attachments to Confluence.
+author: 'Andreas Pfurtscheller'
+branding:
+  color: blue
+  icon: book
+inputs:
+  url:
+    description: 'Confluence url.'
+    required: true
+  username:
+    description: 'Confluence username.'
+    required: true
+  access_token:
+    description: 'Confluence access token.'
+    required: true
+  page_id:
+    description: 'Confluence page id.'
+    required: true
+  attachments:
+    description: 'List of attachments to publish.'
+    required: false
+  # TODO: support title
+  # title:
+  #   description: 'Title of the page to publish.'
+  #   required: false
+  # TODO: support content
+  # content:
+  #   description: 'Content to publish.'
+  #   required: false
+runs:
+  using: 'node16'
+  main: 'dist/main/index.js'
