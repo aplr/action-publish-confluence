@@ -39671,13 +39671,12 @@ const uploadAttachment = (pageId, filename, filedata, filetype, attachmentId) =>
         method: "POST",
         headers: {
             "X-Atlassian-Token": "no-check",
-            "Content-Type": "multipart/form-data",
         },
         body: formData,
     });
     if (!response.ok) {
         const data = yield response.text();
-        throw new Error(`Failed to upload attachment: ${data}`);
+        throw new Error(`could not upload attachment: ${data}`);
     }
     const data = yield response.json();
     return data;
@@ -39687,7 +39686,7 @@ const getAttachments = (pageId) => __awaiter(void 0, void 0, void 0, function* (
     const response = yield req(`content/${pageId}/child/attachment`);
     if (!response.ok) {
         const data = yield response.text();
-        throw new Error(`Failed to get attachments: ${data}`);
+        throw new Error(`could not get attachments: ${data}`);
     }
     const data = yield response.json();
     return data;
@@ -39778,7 +39777,7 @@ function syncAttachments(pageId, attachments) {
         const remoteAttachments = yield confluence.getAttachments(pageId);
         const remoteAttachmentsMap = Object.fromEntries(remoteAttachments.results.map(attachment => [attachment.title, attachment]));
         core.info(`Found ${remoteAttachments.results.length} attachments on page ${pageId}:`);
-        core.info(remoteAttachments.results.map(attachment => attachment.title).join(", "));
+        core.info(remoteAttachments.results.map(a => ` - ${a.title}`).join("\n"));
         for (const [name, filename] of Object.entries(attachments)) {
             const data = yield (0, promises_1.readFile)(path_1.default.resolve(process_1.default.cwd(), filename));
             // get remote attachment if exists
@@ -40050,7 +40049,7 @@ module.exports = JSON.parse('{"application/1d-interleaved-parityfec":{"source":"
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"@aplr/action-publish-confluence","version":"0.0.1","private":true,"description":"Publish content to confluence.","main":"lib/main.js","scripts":{"build":"tsc","format":"prettier --write \'**/*.ts\'","format-check":"prettier --check \'**/*.ts\'","lint":"eslint src/**/*.ts","package":"ncc build src/main.ts -o dist/main","test":"jest --passWithNoTests","all":"npm run build && npm run format && npm run lint && npm run package && npm test","prepare":"husky install"},"files":["dist/**/*"],"repository":{"type":"git","url":"https://github.com/aplr/action-publish-confluence.git"},"keywords":["actions","github","confluence"],"author":"Andreas Pfurtscheller <a@aplr.me>","license":"MIT","dependencies":{"@actions/core":"1.10.0","@actions/exec":"1.1.1","@actions/github":"5.1.1","@actions/tool-cache":"2.0.1","@google-github-actions/actions-utils":"0.4.8","exponential-backoff":"3.1.1","mime-types":"^2.1.35","slugify":"1.6.6","undici":"5.22.1","zod":"3.21.4"},"devDependencies":{"@types/mime-types":"2.1.1","@types/node":"20.4.2","@typescript-eslint/parser":"6.1.0","@vercel/ncc":"0.36.1","eslint":"8.45.0","eslint-plugin-github":"4.9.2","eslint-plugin-jest":"27.2.3","eslint-plugin-prettier":"5.0.0","husky":"8.0.3","jest":"29.6.1","js-yaml":"4.1.0","lint-staged":"13.2.3","prettier":"3.0.0","ts-jest":"29.1.1","typescript":"5.1.6"},"lint-staged":{"*.js":"eslint --cache --fix","*.ts":"eslint --cache --fix"}}');
+module.exports = JSON.parse('{"name":"@aplr/action-publish-confluence","version":"0.0.1","private":true,"description":"Publish content to confluence.","main":"lib/main.js","scripts":{"build":"tsc","format":"prettier --write \'**/*.ts\'","format-check":"prettier --check \'**/*.ts\'","lint":"eslint src/**/*.ts","package":"ncc build src/main.ts -o dist/main","test":"glob -c \\"node --loader @swc-node/register/esm --test\\" \\"./src/**/*.test.ts\\"","all":"npm run build && npm run format && npm run lint && npm run package && npm test","prepare":"husky install"},"files":["dist/**/*"],"repository":{"type":"git","url":"https://github.com/aplr/action-publish-confluence.git"},"keywords":["actions","github","confluence"],"author":"Andreas Pfurtscheller <a@aplr.me>","license":"MIT","dependencies":{"@actions/core":"1.10.0","@actions/exec":"1.1.1","@actions/github":"5.1.1","@actions/tool-cache":"2.0.1","@google-github-actions/actions-utils":"0.4.8","exponential-backoff":"3.1.1","mime-types":"^2.1.35","slugify":"1.6.6","undici":"5.22.1","zod":"3.21.4"},"devDependencies":{"@swc-node/register":"1.6.6","@swc/core":"1.3.70","@types/mime-types":"2.1.1","@types/node":"20.4.2","@typescript-eslint/parser":"6.1.0","@vercel/ncc":"0.36.1","eslint":"8.45.0","eslint-plugin-github":"4.9.2","eslint-plugin-prettier":"5.0.0","glob":"10.3.3","husky":"8.0.3","js-yaml":"4.1.0","lint-staged":"13.2.3","msw":"^1.2.3","prettier":"3.0.0","typescript":"5.1.6"},"lint-staged":{"*.js":"eslint --cache --fix","*.ts":"eslint --cache --fix"}}');
 
 /***/ })
 

@@ -34,7 +34,7 @@ async function syncAttachments(
   )
 
   core.info(`Found ${remoteAttachments.results.length} attachments on page ${pageId}:`)
-  core.info(remoteAttachments.results.map(attachment => attachment.title).join(", "))
+  core.info(remoteAttachments.results.map(a => ` - ${a.title}`).join("\n"))
 
   for (const [name, filename] of Object.entries(attachments)) {
     const data = await readFile(path.resolve(process.cwd(), filename))

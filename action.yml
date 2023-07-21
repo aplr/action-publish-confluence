@@ -32,5 +32,5 @@ inputs:
   #   description: 'Content to publish.'
   #   required: false
 runs:
-  using: 'node16'
+  using: 'node'
   main: 'dist/main/index.js'

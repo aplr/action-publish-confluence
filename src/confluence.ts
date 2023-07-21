@@ -36,14 +36,13 @@ export const uploadAttachment = async (
     method: "POST",
     headers: {
       "X-Atlassian-Token": "no-check",
-      "Content-Type": "multipart/form-data",
     },
     body: formData,
   })
 
   if (!response.ok) {
     const data = await response.text()
-    throw new Error(`Failed to upload attachment: ${data}`)
+    throw new Error(`could not upload attachment: ${data}`)
   }
 
   const data = await response.json()
@@ -58,7 +57,7 @@ export const getAttachments = async (
 
   if (!response.ok) {
     const data = await response.text()
-    throw new Error(`Failed to get attachments: ${data}`)
+    throw new Error(`could not get attachments: ${data}`)
   }
 
   const data = await response.json()
