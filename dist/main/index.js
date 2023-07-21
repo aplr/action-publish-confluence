@@ -39548,7 +39548,6 @@ function syncAttachments(pageId, attachments) {
         for (const [_, filename] of Object.entries(attachments)) {
             // check if files exist
             yield (0, promises_1.stat)(path_1.default.resolve(process_1.default.cwd(), filename));
-            core.info((yield (0, promises_1.readdir)(path_1.default.resolve(process_1.default.cwd(), filename))).join(","));
         }
         const remoteAttachments = yield confluence.getAttachments(pageId);
         const remoteAttachmentsMap = Object.fromEntries(remoteAttachments.results.map(attachment => [attachment.title, attachment]));

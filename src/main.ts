@@ -1,6 +1,6 @@
 import path from "path"
 import process from "process"
-import { readFile, stat, readdir } from "fs/promises"
+import { readFile, stat } from "fs/promises"
 
 import * as core from "@actions/core"
 import * as utils from "@google-github-actions/actions-utils"
@@ -24,7 +24,6 @@ async function syncAttachments(
   for (const [_, filename] of Object.entries(attachments)) {
     // check if files exist
     await stat(path.resolve(process.cwd(), filename))
-    core.info((await readdir(path.resolve(process.cwd(), filename))).join(","))
   }
 
   const remoteAttachments = await confluence.getAttachments(pageId)
