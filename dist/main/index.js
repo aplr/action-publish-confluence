@@ -39373,21 +39373,24 @@ exports.getConfig = void 0;
 const zod_1 = __importDefault(__nccwpck_require__(3301));
 const core = __importStar(__nccwpck_require__(2186));
 // A regex that accepts a list of string=string pairs, separated by either commas or newlines.
-const keyValueRegex = /^((?:\s*[\w-]+\s*=\s*.+\s*(?:,|\n)?)+)$/;
+const keyValueRegex = /^((?:\s*[\w-.+]+\s*=\s*.+\s*(?:,|\n)?)+)$/;
 const parseKeyValuePairs = (value) => Object.fromEntries(value.split(/,|\n/).map(p => p
     .trim()
     .split("=")
     .map(v => v.trim())));
 const configSchema = zod_1.default.object({
     url: zod_1.default.string().url(),
-    username: zod_1.default.string(),
-    accessToken: zod_1.default.string(),
+    username: zod_1.default.string().optional(),
+    password: zod_1.default.string().optional(),
+    accessToken: zod_1.default.string().optional(),
     pageId: zod_1.default.string(),
     attachments: zod_1.default.string().regex(keyValueRegex).transform(parseKeyValuePairs),
 });
 function getConfig() {
     return __awaiter(this, void 0, void 0, function* () {
-        const config = Object.fromEntries(Object.entries(getActionInputs()).filter(([_, v]) => v !== undefined));
+        const inputs = getActionInputs();
+        core.info(JSON.stringify(inputs));
+        const config = Object.fromEntries(Object.entries(inputs).filter(([_, v]) => v !== undefined));
         return yield configSchema.parseAsync(config);
     });
 }
@@ -39395,8 +39398,9 @@ exports.getConfig = getConfig;
 function getActionInputs() {
     return {
         url: core.getInput("url", { required: true }),
-        username: core.getInput("username", { required: true }),
-        accessToken: core.getInput("access_token", { required: true }),
+        username: core.getInput("username", { required: false }),
+        password: core.getInput("password", { required: false }),
+        accessToken: core.getInput("access_token", { required: false }),
         pageId: core.getInput("page_id", { required: true }),
         attachments: core.getInput("attachments", { required: false }),
     };
@@ -39435,8 +39439,6 @@ exports.getAttachments = exports.uploadAttachment = exports.setConfig = void 0;
 const undici_1 = __nccwpck_require__(1773);
 let _config = {
     url: "",
-    username: "",
-    accessToken: "",
 };
 const setConfig = (config) => {
     _config = config;
@@ -39467,11 +39469,21 @@ const getAttachments = (pageId) => __awaiter(void 0, void 0, void 0, function* (
     return data;
 });
 exports.getAttachments = getAttachments;
+const getAuthHeader = () => {
+    const { username, password, accessToken } = _config;
+    if (accessToken) {
+        return `Bearer ${accessToken}`;
+    }
+    else if (username && password) {
+        const credentials = Buffer.from([username, password].join(":")).toString("base64");
+        return `Basic ${credentials}`;
+    }
+    throw new Error("No credentials provided");
+};
 const req = (path, init) => __awaiter(void 0, void 0, void 0, function* () {
-    const { username, accessToken } = _config;
-    const auth = Buffer.from([username, accessToken].join(":")).toString("base64");
+    const auth = getAuthHeader();
     const _a = init || {}, { headers = {} } = _a, options = __rest(_a, ["headers"]);
-    return yield (0, undici_1.fetch)(`${_config.url}/rest/api/${path}`, Object.assign({ headers: Object.assign({ Authorization: `Basic ${auth}` }, headers) }, options));
+    return yield (0, undici_1.fetch)(`${_config.url}/rest/api/${path}`, Object.assign({ headers: Object.assign({ Authorization: auth }, headers) }, options));
 });
 
 
