@@ -42,7 +42,14 @@ async function syncAttachments(
     const remoteAttachment = remoteAttachmentsMap[name]
 
     // upload the attachment
-    await confluence.uploadAttachment(pageId, name, data, remoteAttachment?.id)
+    const result = await confluence.uploadAttachment(
+      pageId,
+      name,
+      data,
+      remoteAttachment?.id,
+    )
+
+    core.info(JSON.stringify(result))
 
     if (remoteAttachment) {
       core.info(`Updated ${name} on page ${pageId}.`)
